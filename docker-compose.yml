@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database Service
+  postgres_db:
+    image: postgres:16-alpine
+    container_name: drishticare_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: drishti_user
+      POSTGRES_PASSWORD: drishti_password_2026
+      POSTGRES_DB: drishticare
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U drishti_user -d drishticare"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. FastAPI Clinical AI Backend Service
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: drishticare_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      STORAGE_MODE: local
+      DATABASE_URL: postgresql://drishti_user:drishti_password_2026@postgres_db:5432/drishticare
+      IMAGE_STORAGE_PATH: ./data/images
+      JWT_SECRET_KEY: drishticare_clinical_secret_key_2026_change_in_production
+      ACCESS_TOKEN_EXPIRE_MINUTES: 480
+    volumes:
+      - backend_images:/app/backend/data/images
+      - ./backend/app/metrics.json:/app/backend/app/metrics.json:ro
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+
+  # 3. React Vite Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: drishticare_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      VITE_API_URL: http://localhost:8000/api
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  backend_images:
+

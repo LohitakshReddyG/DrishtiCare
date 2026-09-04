@@ -1,0 +1,116 @@
+[
+  {
+    "id": "SAMPLE-0",
+    "grade": 0,
+    "grade_name": "Grade 0 Normal",
+    "file_name": "Grade_0_Normal.jpg",
+    "url": "/static/samples/Grade_0_Normal.jpg",
+    "referable": false,
+    "description": "Healthy retina with sharp optic disc and normal macula.",
+    "patient_meta": {
+      "name": "Demo Patient Grade 0",
+      "age": 45,
+      "gender": "Female",
+      "village": "Rampur",
+      "diabetes_years": 4.0
+    }
+  },
+  {
+    "id": "SAMPLE-1",
+    "grade": 1,
+    "grade_name": "Grade 1 Mild",
+    "file_name": "Grade_1_Mild.jpg",
+    "url": "/static/samples/Grade_1_Mild.jpg",
+    "referable": false,
+    "description": "Mild NPDR with isolated microaneurysms.",
+    "patient_meta": {
+      "name": "Demo Patient Grade 1",
+      "age": 50,
+      "gender": "Male",
+      "village": "Dharampur",
+      "diabetes_years": 7.5
+    }
+  },
+  {
+    "id": "SAMPLE-2",
+    "grade": 2,
+    "grade_name": "Grade 2 Moderate Referable",
+    "file_name": "Grade_2_Moderate_Referable.jpg",
+    "url": "/static/samples/Grade_2_Moderate_Referable.jpg",
+    "referable": true,
+    "description": "Moderate NPDR with multiple dot hemorrhages and hard exudates.",
+    "patient_meta": {
+      "name": "Demo Patient Grade 2",
+      "age": 55,
+      "gender": "Female",
+      "village": "Sonpur",
+      "diabetes_years": 11.0
+    }
+  },
+  {
+    "id": "SAMPLE-3",
+    "grade": 3,
+    "grade_name": "Grade 3 Severe Referable",
+    "file_name": "Grade_3_Severe_Referable.jpg",
+    "url": "/static/samples/Grade_3_Severe_Referable.jpg",
+    "referable": true,
+    "description": "Severe NPDR with 4-quadrant hemorrhages and venous beading.",
+    "patient_meta": {
+      "name": "Demo Patient Grade 3",
+      "age": 60,
+      "gender": "Male",
+      "village": "Kishanpur",
+      "diabetes_years": 14.5
+    }
+  },
+  {
+    "id": "SAMPLE-4",
+    "grade": 4,
+    "grade_name": "Grade 4 PDR Urgent",
+    "file_name": "Grade_4_PDR_Urgent.jpg",
+    "url": "/static/samples/Grade_4_PDR_Urgent.jpg",
+    "referable": true,
+    "description": "Proliferative DR with extensive neovascularization and fibrous proliferation.",
+    "patient_meta": {
+      "name": "Demo Patient Grade 4",
+      "age": 65,
+      "gender": "Female",
+      "village": "Madhavpur",
+      "diabetes_years": 18.0
+    }
+  },
+  {
+    "id": "SAMPLE-QUALITY-BLUR",
+    "grade": -1,
+    "grade_name": "Quality Test: Defocused / Motion Blur",
+    "file_name": "Quality_Fail_Blurry.jpg",
+    "url": "/static/samples/Quality_Fail_Blurry.jpg",
+    "referable": null,
+    "expected_quality_pass": false,
+    "description": "Defocussed camera capture to demonstrate automatic OpenCV quality rejection.",
+    "patient_meta": {
+      "name": "Quality Test Case (Blur)",
+      "age": 52,
+      "gender": "Male",
+      "village": "Bhimnagar",
+      "diabetes_years": 8.0
+    }
+  },
+  {
+    "id": "SAMPLE-QUALITY-DARK",
+    "grade": -1,
+    "grade_name": "Quality Test: Underexposed / Dark",
+    "file_name": "Quality_Fail_Underexposed.jpg",
+    "url": "/static/samples/Quality_Fail_Underexposed.jpg",
+    "referable": null,
+    "expected_quality_pass": false,
+    "description": "Insufficient illumination capture demonstrating underexposure rejection.",
+    "patient_meta": {
+      "name": "Quality Test Case (Dark)",
+      "age": 58,
+      "gender": "Female",
+      "village": "Chandrapur",
+      "diabetes_years": 10.0
+    }
+  }
+]

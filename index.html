@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explainable AI for Diabetic Retinopathy Screening in Rural India</title>
+    <meta name="description" content="Retinal image analysis pipeline, Grad-CAM explainability, and district telemedicine workflow simulation.">
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <!-- Top Header -->
+    <header class="app-header">
+        <div class="brand-group">
+            <div class="brand-icon">DR</div>
+            <div class="brand-text">
+                <h1>Explainable AI DR Screening Pipeline</h1>
+                <p>National Health Mission - Tele-Ophthalmology Triage System</p>
+            </div>
+        </div>
+        <div class="header-badges">
+            <div class="status-chip">
+                <span class="pulse-dot"></span>
+                <span>District Telemedicine Active (60 PHCs)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="app-nav-tabs">
+        <button class="nav-tab active" data-tab="dashboard">📊 Dashboard Overview</button>
+        <button class="nav-tab" data-tab="iqa">📷 Quality & CLAHE</button>
+        <button class="nav-tab" data-tab="segmentation">🔬 Structure Segmentation</button>
+        <button class="nav-tab" data-tab="grading">🔥 DR Grading & Grad-CAM</button>
+        <button class="nav-tab" data-tab="report">📄 30s Doctor Report</button>
+        <button class="nav-tab" data-tab="simulink">⚡ Telemedicine Simulator</button>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="main-container">
+
+        <!-- 1. DASHBOARD OVERVIEW VIEW -->
+        <section id="view-dashboard" class="view-section active">
+            <!-- Top Metric Tiles -->
+            <div class="metric-tile-grid">
+                <div class="metric-tile">
+                    <div class="metric-label">Referable Sensitivity Target</div>
+                    <div class="metric-val" style="color: var(--accent-emerald);">93.4% <span style="font-size:0.8rem; color:var(--text-muted);">(Req >90%)</span></div>
+                </div>
+                <div class="metric-tile">
+                    <div class="metric-label">Referable Specificity Target</div>
+                    <div class="metric-val" style="color: var(--primary-cyan);">89.2% <span style="font-size:0.8rem; color:var(--text-muted);">(Req >85%)</span></div>
+                </div>
+                <div class="metric-tile">
+                    <div class="metric-label">Avg Clinician Review Protocol</div>
+                    <div class="metric-val" style="color: var(--accent-amber);">22.4 sec <span style="font-size:0.8rem; color:var(--text-muted);">(Req <30s)</span></div>
+                </div>
+                <div class="metric-tile">
+                    <div class="metric-label">Annual District Population Capacity</div>
+                    <div class="metric-val" style="color: var(--accent-purple);">120,000+</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="grid-2col">
+                <!-- Case Selector Card -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>Select Screening Scan Case</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">6 Test Cases Loaded</span>
+                    </div>
+
+                    <!-- Custom Image File Uploader -->
+                    <div class="upload-box" id="fundus-upload-box" style="border: 2px dashed var(--primary-cyan); background: rgba(0, 242, 254, 0.05); padding: 0.8rem; border-radius: 10px; text-align: center; margin-bottom: 1rem; cursor: pointer; transition: all 0.2s ease;">
+                        <input type="file" id="custom-fundus-file-input" accept="image/*" style="display: none;" />
+                        <span style="font-size: 1.1rem; display: block;">📤 Upload Custom Fundus Image</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Supports PNG, JPG, JPEG, TIF fundus photos</span>
+                    </div>
+
+                    <div class="case-selector-list" id="case-list-container">
+                        <!-- Injected via app.js -->
+                    </div>
+                </div>
+
+                <!-- Main Inspection Canvas Card -->
+                <div class="card">
+                    <div class="card-title">
+                        <span id="selected-case-title">Fundus Inspection Viewport (CASE-003)</span>
+                        <span class="grade-badge grade-2" id="selected-case-badge">Grade 2: Moderate NPDR</span>
+                    </div>
+                    
+                    <div class="canvas-viewport-container">
+                        <canvas id="main-fundus-canvas" width="600" height="600" class="fundus-canvas"></canvas>
+                    </div>
+
+                    <!-- Toggles Bar -->
+                    <div class="controls-bar">
+                        <button class="btn-toggle active" id="btn-toggle-original">Original</button>
+                        <button class="btn-toggle" id="btn-toggle-clahe">CLAHE Enhanced</button>
+                        <button class="btn-toggle" id="btn-toggle-gradcam">Grad-CAM Heatmap</button>
+                        <button class="btn-toggle" id="btn-toggle-lesions">Segmentation Overlays</button>
+                        <button class="btn-primary" style="margin-left: auto;" id="btn-quick-report">Generate 30s Report →</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. IMAGE QUALITY ASSESSMENT (IQA) & CLAHE VIEW -->
+        <section id="view-iqa" class="view-section">
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-title">Automated Quality Assessment Parameters</div>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;" id="iqa-metrics-box">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Adaptive Contrast Enhancement (CLAHE + Green Channel)</div>
+                    <div class="canvas-viewport-container">
+                        <canvas id="clahe-preview-canvas" width="550" height="550" class="fundus-canvas"></canvas>
+                    </div>
+                    <div class="controls-bar">
+                        <label style="font-size: 0.8rem;">CLAHE Clip Limit:</label>
+                        <input type="range" id="slider-clahe-clip" min="1.0" max="5.0" step="0.5" value="2.5" style="accent-color: var(--primary-cyan);" />
+                        <span id="val-clahe-clip" style="font-size: 0.85rem; font-weight: 600;">2.5</span>
+                        <button class="btn-toggle active" id="btn-green-channel-toggle" style="margin-left: auto;">Green Channel Isolation</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. RETINAL STRUCTURE SEGMENTATION VIEW -->
+        <section id="view-segmentation" class="view-section">
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-title">Extracted Anatomical & Pathological Features</div>
+                    <div id="segmentation-stats-box" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Structure & Lesion Overlay Inspector</div>
+                    <div class="canvas-viewport-container">
+                        <canvas id="seg-overlay-canvas" width="550" height="550" class="fundus-canvas"></canvas>
+                    </div>
+                    <div class="controls-bar">
+                        <button class="btn-toggle active" id="toggle-seg-od">Optic Disc / Fovea</button>
+                        <button class="btn-toggle active" id="toggle-seg-ma">Microaneurysms</button>
+                        <button class="btn-toggle active" id="toggle-seg-he">Hard Exudates</button>
+                        <button class="btn-toggle active" id="toggle-seg-hm">Hemorrhages</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. DR SEVERITY GRADING & GRAD-CAM EXPLAINABILITY VIEW -->
+        <section id="view-grading" class="view-section">
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-title">ICDR DR Severity Grading Engine</div>
+                    <div id="grading-details-box" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Injected via JS -->
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <div class="card-title">Model ROC Sensitivity/Specificity Benchmark</div>
+                        <canvas id="roc-chart-canvas" width="380" height="240" style="border-radius: 8px; width: 100%;"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Grad-CAM Neural Attention Map</div>
+                    <div class="canvas-viewport-container">
+                        <canvas id="gradcam-canvas" width="550" height="550" class="fundus-canvas"></canvas>
+                    </div>
+                    <div class="controls-bar">
+                        <label style="font-size: 0.8rem;">Heatmap Opacity:</label>
+                        <input type="range" id="slider-heatmap-opacity" min="0.1" max="1.0" step="0.05" value="0.65" style="accent-color: var(--accent-magenta);" />
+                        <span id="val-heatmap-opacity" style="font-size: 0.85rem; font-weight: 600;">0.65</span>
+                        <select id="select-palette" class="form-select" style="width: 140px; margin-left: auto;">
+                            <option value="jet" selected>Jet Palette</option>
+                            <option value="inferno">Inferno Palette</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. 30-SECOND DOCTOR REVIEW & CLINICAL REPORT VIEW -->
+        <section id="view-report" class="view-section">
+            <div class="controls-bar no-print" style="margin-bottom: 1rem;">
+                <span style="font-weight: 600; color: var(--primary-cyan);">30-Second Human-in-the-Loop Validation Protocol</span>
+                <button class="btn-primary" style="margin-left: auto;" onclick="window.print()">🖨️ Export PDF / Print Report</button>
+            </div>
+            <div id="report-card-render-target">
+                <!-- Injected via explainabilityReport.js -->
+            </div>
+        </section>
+
+        <!-- 6. TELEMEDICINE SIMULINK WORKFLOW SIMULATOR VIEW -->
+        <section id="view-simulink" class="view-section">
+            <div class="grid-2col">
+                <!-- Controls & Parameters -->
+                <div class="card">
+                    <div class="card-title">Simulink Telemedicine Queue Parameters</div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 600;">Annual Target Patients (District Population):</label>
+                            <input type="range" id="sim-slider-patients" min="20000" max="250000" step="10000" value="120000" style="width: 100%; accent-color: var(--primary-cyan);" />
+                            <span id="sim-val-patients" style="font-size: 0.9rem; color: var(--primary-cyan); font-weight: 700;">120,000 Patients / Year</span>
+                        </div>
+
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 600;">Primary Healthcare Centres (PHCs):</label>
+                            <input type="range" id="sim-slider-phcs" min="10" max="150" step="5" value="60" style="width: 100%; accent-color: var(--primary-cyan);" />
+                            <span id="sim-val-phcs" style="font-size: 0.9rem; color: var(--primary-cyan); font-weight: 700;">60 PHCs</span>
+                        </div>
+
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 600;">Rural Telemetry Bandwidth:</label>
+                            <select id="sim-select-bandwidth" class="form-select">
+                                <option value="2G">2G Edge Network (0.15 Mbps) - High Latency</option>
+                                <option value="3G" selected>3G Mobile Link (2.5 Mbps) - Standard</option>
+                                <option value="4G">4G LTE Network (15.0 Mbps) - High Speed</option>
+                                <option value="Satellite">Satellite Telemetry (1.0 Mbps)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label style="font-size: 0.85rem; font-weight: 600;">Tele-Ophthalmologist Doctor Pool:</label>
+                            <input type="range" id="sim-slider-doctors" min="1" max="15" step="1" value="5" style="width: 100%; accent-color: var(--primary-cyan);" />
+                            <span id="sim-val-doctors" style="font-size: 0.9rem; color: var(--primary-cyan); font-weight: 700;">5 Doctors on Duty</span>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                            <input type="checkbox" id="sim-check-edge" checked style="width: 18px; height: 18px; accent-color: var(--accent-emerald);" />
+                            <label for="sim-check-edge" style="font-size: 0.85rem; font-weight: 600;">Enable On-Site Edge AI Pre-Screening Filter</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation Output Dashboard -->
+                <div class="card">
+                    <div class="card-title">Telemedicine Workflow & Queue Analytics</div>
+
+                    <div class="metric-tile-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
+                        <div class="metric-tile">
+                            <div class="metric-label">Screening Turnaround Time (TAT)</div>
+                            <div class="metric-val" id="sim-out-tat" style="color: var(--accent-emerald);">4.2 Hours</div>
+                        </div>
+                        <div class="metric-tile">
+                            <div class="metric-label">Doctor Workload Utilization</div>
+                            <div class="metric-val" id="sim-out-util" style="color: var(--accent-amber);">72%</div>
+                        </div>
+                    </div>
+
+                    <div id="sim-bottleneck-banner" style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-emerald); padding: 0.8rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;">
+                        <strong>System Bottleneck Status:</strong> Optimal resource allocation across all 60 PHCs.
+                    </div>
+
+                    <div>
+                        <div class="card-title" style="font-size: 0.9rem;">30-Day Queue Latency Trend (Hours)</div>
+                        <canvas id="sim-latency-canvas" width="500" height="200" style="border-radius: 8px; width: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- App JavaScript Entry point -->
+    <script type="module" src="src/js/app.js"></script>
+</body>
+</html>
